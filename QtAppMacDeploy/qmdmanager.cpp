@@ -22,8 +22,7 @@ const QmdManager& QmdManager::operator =(const QmdManager& obj)
 
 void QmdManager::startDeploy(bool saveDeployScript)
 {
-    if(m_settings && !m_settings->getAppPath().isEmpty() && !m_settings->getCertificate().isEmpty() && !m_settings->getInstallCertificate().isEmpty() &&
-            !m_settings->getQtFolder().isEmpty() && !m_settings->getEntitlements().isEmpty())
+    if(m_settings && !m_settings->getAppPath().isEmpty() && !m_settings->getQtFolder().isEmpty())
     {
         QString deployScript;
         deployScript.clear();
@@ -77,14 +76,23 @@ void QmdManager::startDeploy(bool saveDeployScript)
                 }
 
                 script.append(QString("dsymutil %1 -o %2\n").arg(m_settings->getAppPath()+"/Contents/MacOS/"+appName).arg(m_settings->getAppPath()+"/../"+appName+".app.dSYM"));
-                script.append(QString("find %1 -name *.dylib | xargs -I $ codesign -vvvv --force --verify --deep --verbose --sign \"%2\" $\n").arg(m_settings->getAppPath()+"/Contents").
-                              arg(m_settings->getCertificate()));
-                script.append(QString("find %1 -name Qt* -type f | xargs -I $ codesign -vvvv --force --verify --deep --verbose --sign \"%2\" $\n").arg(m_settings->getAppPath()+"/Contents").
-                              arg(m_settings->getCertificate()));
-                script.append(QString("codesign -vvvv --force --verify --deep --verbose --entitlements %1 --sign \"%2\" %3\n").arg(m_settings->getEntitlements()).
-                              arg(m_settings->getCertificate()).arg(m_settings->getAppPath()));
-                script.append(QString("productbuild --component \"%1\" /Applications --sign \"%2\" --product \"%3/Contents/Info.plist\" %4.pkg\n").arg(m_settings->getAppPath()).
-                              arg(m_settings->getInstallCertificate()).arg(m_settings->getAppPath()).arg(m_settings->getAppPath()+"/../"+appName));
+
+                if(!m_settings->getCertificate().isEmpty() && !m_settings->getEntitlements().isEmpty())
+                {
+                    script.append(QString("find %1 -name *.dylib | xargs -I $ codesign -vvvv --force --verify --deep --verbose --sign \"%2\" $\n").arg(m_settings->getAppPath()+"/Contents").
+                                  arg(m_settings->getCertificate()));
+                    script.append(QString("find %1 -name Qt* -type f | xargs -I $ codesign -vvvv --force --verify --deep --verbose --sign \"%2\" $\n").arg(m_settings->getAppPath()+"/Contents").
+                                  arg(m_settings->getCertificate()));
+                    script.append(QString("codesign -vvvv --force --verify --deep --verbose --entitlements %1 --sign \"%2\" %3\n").arg(m_settings->getEntitlements()).
+                                  arg(m_settings->getCertificate()).arg(m_settings->getAppPath()));
+
+                    if(!m_settings->getInstallCertificate().isEmpty())
+                    {
+                        script.append(QString("productbuild --component \"%1\" /Applications --sign \"%2\" --product \"%3/Contents/Info.plist\" %4.pkg\n").arg(m_settings->getAppPath()).
+                                      arg(m_settings->getInstallCertificate()).arg(m_settings->getAppPath()).arg(m_settings->getAppPath()+"/../"+appName));
+                    }
+                    script.append(QString("codesign -vvvv \"%1\"\n").arg(m_settings->getAppPath()));
+                }
 
                 QFile file(appPath+"/script.sh");
                 if(file.open(QIODevice::WriteOnly))
@@ -128,10 +136,10 @@ void QmdManager::startDeploy(bool saveDeployScript)
                         m_consoleMessage.append("Call "+cmd2->getCmdName() + " with result: {" + QString(content2)+"}\n");
                         emit consoleMessageDidChange(m_consoleMessage);
 
-//                        QmdCommand* cmd6 = new QmdCommand();
-//                        cmd6->setCmdName("rm");
-//                        cmd6->setParams(QStringList()<<"-rf"<<appPath+"/script.sh");
-//                        m_cmdManager->addCommand(cmd6);
+                        QmdCommand* cmd6 = new QmdCommand();
+                        cmd6->setCmdName("rm");
+                        cmd6->setParams(QStringList()<<"-rf"<<appPath+"/script.sh");
+                        m_cmdManager->addCommand(cmd6);
                     });
 
                     m_cmdManager->addCommand(cmd5);
@@ -185,15 +193,24 @@ void QmdManager::startDeploy(bool saveDeployScript)
                 }
 
                 script.append(QString("dsymutil %1 -o %2\n").arg(m_settings->getAppPath()+"/Contents/MacOS/"+appName).arg(m_settings->getAppPath()+"/../"+appName+".app.dSYM"));
-                script.append(QString("find %1 -name *.dylib | xargs -I $ codesign -vvvv --force --verify --deep --verbose --sign \"%2\" $\n").arg(m_settings->getAppPath()+"/Contents").
-                              arg(m_settings->getCertificate()));
-                script.append(QString("find %1 -name Qt* -type f | xargs -I $ codesign -vvvv --force --verify --deep --verbose --sign \"%2\" $\n").arg(m_settings->getAppPath()+"/Contents").
-                              arg(m_settings->getCertificate()));
-                script.append(QString("codesign -vvvv --force --verify --deep --verbose --entitlements %1 --sign \"%2\" %3\n").arg(m_settings->getEntitlements()).
-                              arg(m_settings->getCertificate()).arg(m_settings->getAppPath()));
-                script.append(QString("productbuild --component \"%1\" /Applications --sign \"%2\" --product \"%3/Contents/Info.plist\" %4.pkg\n").arg(m_settings->getAppPath()).
-                              arg(m_settings->getInstallCertificate()).arg(m_settings->getAppPath()).arg(m_settings->getAppPath()+"/../"+appName));
-                script.append(QString("codesign -vvvv \"%1\"\n").arg(m_settings->getAppPath()));
+
+                if(!m_settings->getCertificate().isEmpty())
+                {
+                    script.append(QString("find %1 -name *.dylib | xargs -I $ codesign -vvvv --force --verify --deep --verbose --sign \"%2\" $\n").arg(m_settings->getAppPath()+"/Contents").
+                                  arg(m_settings->getCertificate()));
+                    script.append(QString("find %1 -name Qt* -type f | xargs -I $ codesign -vvvv --force --verify --deep --verbose --sign \"%2\" $\n").arg(m_settings->getAppPath()+"/Contents").
+                                  arg(m_settings->getCertificate()));
+                    script.append(QString("codesign -vvvv --force --verify --deep --verbose --entitlements %1 --sign \"%2\" %3\n").arg(m_settings->getEntitlements()).
+                                  arg(m_settings->getCertificate()).arg(m_settings->getAppPath()));
+
+                    if(!m_settings->getInstallCertificate().isEmpty())
+                    {
+                        script.append(QString("productbuild --component \"%1\" /Applications --sign \"%2\" --product \"%3/Contents/Info.plist\" %4.pkg\n").arg(m_settings->getAppPath()).
+                                      arg(m_settings->getInstallCertificate()).arg(m_settings->getAppPath()).arg(m_settings->getAppPath()+"/../"+appName));
+                    }
+
+                    script.append(QString("codesign -vvvv \"%1\"\n").arg(m_settings->getAppPath()));
+                }
 
                 QFile file(appPath+"/script.sh");
                 if(file.open(QIODevice::WriteOnly))

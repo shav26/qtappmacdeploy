@@ -96,8 +96,7 @@ ApplicationWindow {
 
     function checkAllFields()
     {
-        var bool = (certificateField.text.length > 0 && installCertificateField.text.length > 0 && entitlementsField.text.length > 0 && appPathField.text.length > 0 &&
-                    qtPathField.text.length > 0);
+        var bool = (appPathField.text.length > 0 && qtPathField.text.length > 0);
         btnDeploy.enabled = (bool === true);
     }
 
@@ -135,6 +134,9 @@ ApplicationWindow {
 
                     onTextChanged: {
                         checkAllFields();
+                        installCertificateField.enabled = (certificateField.text.length > 0);
+                        entitlementsField.enabled = (certificateField.text.length > 0);
+                        btnBrowseEntitlements.enabled = (certificateField.text.length > 0);
                     }
                 }
             }
@@ -154,6 +156,7 @@ ApplicationWindow {
 
                 TextField {
                     id: installCertificateField
+                    enabled: false
                     width: parent.width - installCertificateLabel.width
                     placeholderText: "3rd Party Mac Developer Installer: <your ID>"
 
@@ -178,6 +181,7 @@ ApplicationWindow {
 
                 TextField {
                     id: entitlementsField
+                    enabled: false
                     width: parent.width - entitlementsLabel.width - btnBrowseEntitlements.width
 
                     onTextChanged: {
@@ -188,6 +192,7 @@ ApplicationWindow {
                 Button {
                     id: btnBrowseEntitlements
                     height: parent.height
+                    enabled: false
                     text: "..."
 
                     onClicked: {
@@ -344,8 +349,7 @@ ApplicationWindow {
                 enabled: false
 
                 onClicked: {
-                    if(certificateField.text.length > 0 && installCertificateField.text.length > 0 && entitlementsField.text.length > 0 && appPathField.text.length > 0 &&
-                            qtPathField.text.length > 0)
+                    if(appPathField.text.length > 0 && qtPathField.text.length > 0)
                     {
                         spinnerView.running = true;
                         btnDeploy.enabled = false;
