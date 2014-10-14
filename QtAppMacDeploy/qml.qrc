@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/AboutWindow.qml</file>
+        <file>qml/js/helpers.js</file>
+        <file>qml/images/icon_256x256.png</file>
+    </qresource>
+</RCC>
