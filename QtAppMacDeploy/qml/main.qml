@@ -114,6 +114,14 @@ ApplicationWindow {
             height: parent.height - 10 - buttonsRow.height
             spacing: 10
 
+            Component.onCompleted: {
+
+                if(qmdManager !== null && qmdManager.settings !== null)
+                {
+                    qtPathField.text = qmdManager.settings.qtFolder;
+                }
+            }
+
             Row {
                 id: certificateRow
                 width: parent.width

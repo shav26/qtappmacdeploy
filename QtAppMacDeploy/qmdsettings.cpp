@@ -7,7 +7,7 @@ QmdSettings::QmdSettings(QObject *parent) :
     m_installCertificate.clear();
     m_appPath.clear();
     m_qmlFilesPath.clear();
-    m_qtFolder.clear();
+    m_qtFolder = getenv("QTDIR");
 }
 
 QmdSettings::QmdSettings(const QmdSettings& obj)

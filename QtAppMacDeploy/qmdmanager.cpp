@@ -3,7 +3,7 @@
 QmdManager::QmdManager(QQuickItem *parent) :
     QQuickItem(parent)
 {
-    m_settings = NULL;
+    m_settings = new QmdSettings(this);
     m_cmdManager = new QmdCommandManager();
     m_cmdManager->setParent(this);
 }
