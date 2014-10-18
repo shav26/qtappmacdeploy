@@ -27,7 +27,7 @@ void QmdManager::startDeploy(bool saveDeployScript)
         QString deployScript;
         deployScript.clear();
         m_consoleMessage.clear();
-        m_consoleMessage.append("Start working....");
+        m_consoleMessage.append("Start working....\n");
         QString appName = m_settings->getAppPath().split("/").last().split(".").at(0);
         QString appPath = m_settings->getAppPath().replace("/"+appName+".app", "");
 

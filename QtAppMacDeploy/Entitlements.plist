@@ -6,5 +6,11 @@
 	<true/>
 	<key>com.apple.security.files.user-selected.read-write</key>
 	<true/>
+	<key>com.apple.security.files.user-selected.executable</key>
+	<true/>
+	<key>com.apple.security.inherit</key>
+	<true/>
+	<key>com.apple.security.scripting-targets</key>
+	<true/>
 </dict>
 </plist>

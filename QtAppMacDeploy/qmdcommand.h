@@ -95,6 +95,11 @@ class QmdCommand : public QProcess
          *  @param exitStatus The exit status.
          *  @author Andrew Shapovalov*/
         void onFinished(int exitCode, QProcess::ExitStatus exitStatus);
+
+        /** @brief Called when curren command was error.
+         *  @param error The code of error.
+         *  @author Andrew Shapovalov*/
+        void onError(QProcess::ProcessError error);
 };
 Q_DECLARE_METATYPE(QmdCommand)
 
