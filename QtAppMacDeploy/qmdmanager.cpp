@@ -140,6 +140,8 @@ void QmdManager::startDeploy(bool saveDeployScript)
                         cmd6->setCmdName("rm");
                         cmd6->setParams(QStringList()<<"-rf"<<appPath+"/script.sh");
                         m_cmdManager->addCommand(cmd6);
+
+                        emit deployDidFinish();
                     });
 
                     m_cmdManager->addCommand(cmd5);

@@ -101,6 +101,17 @@ ApplicationWindow {
     }
 
 
+    MessageDialog {
+        id: msgDialog
+        width: 200
+        title: "Message"
+        text: "Work is done!"
+
+        onAccepted: {
+            Qt.quit();
+        }
+    }
+
 
     Rectangle {
         id: contentView
@@ -129,10 +140,10 @@ ApplicationWindow {
 
                 Label {
                     id: certificateLabel
-                    width: 200
+                    width: 220
                     height: parent.height
                     verticalAlignment: Qt.AlignVCenter
-                    text: "Mac Developer Certificate "
+                    text: "Mac Developer Certificate (optional) "
                 }
 
                 TextField {
@@ -156,10 +167,10 @@ ApplicationWindow {
 
                 Label {
                     id: installCertificateLabel
-                    width: 200
+                    width: 220
                     height: parent.height
                     verticalAlignment: Qt.AlignVCenter
-                    text: "Mac Install Certificate "
+                    text: "Mac Install Certificate (optional) "
                 }
 
                 TextField {
@@ -181,10 +192,10 @@ ApplicationWindow {
 
                 Label {
                     id: entitlementsLabel
-                    width: 200
+                    width: 220
                     height: parent.height
                     verticalAlignment: Qt.AlignVCenter
-                    text: "Entitlements Path "
+                    text: "Entitlements Path (optional) "
                 }
 
                 TextField {
@@ -219,7 +230,7 @@ ApplicationWindow {
 
                 Label {
                     id: appPathLabel
-                    width: 200
+                    width: 220
                     height: parent.height
                     verticalAlignment: Qt.AlignVCenter
                     text: "Application Path "
@@ -255,7 +266,7 @@ ApplicationWindow {
 
                 Label {
                     id: qmlFilesPathLabel
-                    width: 200
+                    width: 220
                     height: parent.height
                     verticalAlignment: Qt.AlignVCenter
                     text: "QML Files Path (optional) "
@@ -287,7 +298,7 @@ ApplicationWindow {
 
                 Label {
                     id: qtPathLabel
-                    width: 200
+                    width: 220
                     height: parent.height
                     verticalAlignment: Qt.AlignVCenter
                     text: "Qt Install Folder "
@@ -385,6 +396,7 @@ ApplicationWindow {
         onDeployDidFinish: {
             btnDeploy.enabled = true;
             spinnerView.running = false;
+            msgDialog.open();
         }
     }
 }
