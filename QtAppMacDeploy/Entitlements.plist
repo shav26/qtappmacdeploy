@@ -11,6 +11,9 @@
 	<key>com.apple.security.inherit</key>
 	<true/>
 	<key>com.apple.security.scripting-targets</key>
-	<true/>
+	<dict>
+		<key>com.apple.shell</key>
+		<array/>
+	</dict>
 </dict>
 </plist>
