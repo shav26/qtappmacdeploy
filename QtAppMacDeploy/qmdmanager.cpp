@@ -46,11 +46,11 @@ void QmdManager::startDeploy(bool saveDeployScript)
             });
             m_cmdManager->addCommand(cmd);
 
-            deployScript.append(QString("rm -rf %1").arg(m_settings->getAppPath()+"/Contents/Resources/qml/com\n"));
-            QmdCommand* cmd1 = new QmdCommand();
-            cmd1->setCmdName("rm");
-            cmd1->setParams(QStringList()<<"-rf"<<m_settings->getAppPath()+"/Contents/Resources/qml/com");
-            m_cmdManager->addCommand(cmd1);
+//            deployScript.append(QString("rm -rf %1").arg(m_settings->getAppPath()+"/Contents/Resources/qml/com\n"));
+//            QmdCommand* cmd1 = new QmdCommand();
+//            cmd1->setCmdName("rm");
+//            cmd1->setParams(QStringList()<<"-rf"<<m_settings->getAppPath()+"/Contents/Resources/qml/com");
+//            m_cmdManager->addCommand(cmd1);
 
             QmdCommand* cmd2 = new QmdCommand();
             cmd2->setCmdName("ls");
@@ -61,20 +61,9 @@ void QmdManager::startDeploy(bool saveDeployScript)
 
                 m_consoleMessage.append("Call "+cmd->getCmdName() + " with result: {" + QString(content)+"}\n");
                 emit consoleMessageDidChange(m_consoleMessage);
-                QString str(content);
-                QStringList strList = str.split("\n");
                 QString script;
                 script.clear();
-                foreach(QString item, strList)
-                {
-                    QString framework = item.split(" ").last();
-                    if(framework.startsWith("Q"))
-                    {
-                        script.append(QString("cp %1 %2\n").arg(m_settings->getQtFolder()+"/lib/"+framework+"/Contents/Info.plist").
-                                      arg(m_settings->getAppPath()+"/Contents/Frameworks/"+framework+"/Resources"));
-                    }
-                }
-
+                script.append(QString("python %1 %2 %3\n").arg(m_settings->getAppPath()+"/Contents/MacOS/fix_frameworks.py").arg(m_settings->getQtFolder()).arg(m_settings->getAppPath()));
                 script.append(QString("dsymutil %1 -o %2\n").arg(m_settings->getAppPath()+"/Contents/MacOS/"+appName).arg(m_settings->getAppPath()+"/../"+appName+".app.dSYM"));
 
                 if(!m_settings->getCertificate().isEmpty() && !m_settings->getEntitlements().isEmpty())
@@ -141,6 +130,16 @@ void QmdManager::startDeploy(bool saveDeployScript)
                         cmd6->setParams(QStringList()<<"-rf"<<appPath+"/script.sh");
                         m_cmdManager->addCommand(cmd6);
 
+                        QString appName = m_settings->getAppPath().split("/").last().split(".").at(0);
+                        QFile logFile(appPath+"/log_"+appName+".txt");
+                        if(logFile.open(QIODevice::ReadWrite | QIODevice::Text))
+                        {
+                            QTextStream ts(&logFile);
+                            ts<<m_consoleMessage;
+
+                            logFile.close();
+                        }
+
                         emit deployDidFinish();
                     });
 
@@ -153,8 +152,8 @@ void QmdManager::startDeploy(bool saveDeployScript)
         }
         else
         {
-            deployScript.append(QString("%1/bin/macdeployqt %2 -verbose=1 -executable=%3\n").arg(m_settings->getQtFolder()).arg(m_settings->getAppPath()).
-                                arg(m_settings->getAppPath()+"/Contents/MacOS/"+appName));
+            deployScript.append(QString("%1/bin/macdeployqt %2 -verbose=1 -executable=%3 -qmldir=%4\n").arg(m_settings->getQtFolder()).arg(m_settings->getAppPath()).
+                                arg(m_settings->getAppPath()+"/Contents/MacOS/"+appName).arg(m_settings->getQmlFilesPath()));
             QStringList params = QStringList()<<m_settings->getAppPath()<<"-verbose=1"<<"-qmldir="+m_settings->getQmlFilesPath()<<"-executable="+m_settings->getAppPath()+"/Contents/MacOS/"+appName;
             QmdCommand* cmd = new QmdCommand();
             cmd->setCmdName(m_settings->getQtFolder()+"/bin/macdeployqt");
@@ -167,11 +166,11 @@ void QmdManager::startDeploy(bool saveDeployScript)
             });
             m_cmdManager->addCommand(cmd);
 
-            deployScript.append(QString("rm -rf %1\n").arg(m_settings->getAppPath()+"/Contents/Resources/qml/com"));
-            QmdCommand* cmd1 = new QmdCommand();
-            cmd1->setCmdName("rm");
-            cmd1->setParams(QStringList()<<"-rf"<<m_settings->getAppPath()+"/Contents/Resources/qml/com");
-            m_cmdManager->addCommand(cmd1);
+//            deployScript.append(QString("rm -rf %1\n").arg(m_settings->getAppPath()+"/Contents/Resources/qml/com"));
+//            QmdCommand* cmd1 = new QmdCommand();
+//            cmd1->setCmdName("rm");
+//            cmd1->setParams(QStringList()<<"-rf"<<m_settings->getAppPath()+"/Contents/Resources/qml/com");
+//            m_cmdManager->addCommand(cmd1);
 
             QmdCommand* cmd2 = new QmdCommand();
             cmd2->setCmdName("ls");
@@ -180,20 +179,12 @@ void QmdManager::startDeploy(bool saveDeployScript)
                 Q_UNUSED(cmd);
                 Q_UNUSED(exitStatus);
 
-                QString str(content);
-                QStringList strList = str.split("\n");
+                m_consoleMessage.append("Call "+cmd->getCmdName() + " with result: {" + QString(content)+"}\n");
+                emit consoleMessageDidChange(m_consoleMessage);
+
                 QString script;
                 script.clear();
-                foreach(QString item, strList)
-                {
-                    QString framework = item.split(" ").last();
-                    if(framework.startsWith("Q"))
-                    {
-                        script.append(QString("cp %1 %2\n").arg(m_settings->getQtFolder()+"/lib/"+framework+"/Contents/Info.plist").
-                                      arg(m_settings->getAppPath()+"/Contents/Frameworks/"+framework+"/Resources"));
-                    }
-                }
-
+                script.append(QString("python %1 %2 %3\n").arg(m_settings->getAppPath()+"/Contents/MacOS/fix_frameworks.py").arg(m_settings->getQtFolder()).arg(m_settings->getAppPath()));
                 script.append(QString("dsymutil %1 -o %2\n").arg(m_settings->getAppPath()+"/Contents/MacOS/"+appName).arg(m_settings->getAppPath()+"/../"+appName+".app.dSYM"));
 
                 if(!m_settings->getCertificate().isEmpty())
@@ -260,6 +251,16 @@ void QmdManager::startDeploy(bool saveDeployScript)
                         cmd6->setCmdName("rm");
                         cmd6->setParams(QStringList()<<"-rf"<<appPath+"/script.sh");
                         m_cmdManager->addCommand(cmd6);
+
+                        QString appName = m_settings->getAppPath().split("/").last().split(".").at(0);
+                        QFile logFile(appPath+"/log_"+appName+".txt");
+                        if(logFile.open(QIODevice::ReadWrite | QIODevice::Text))
+                        {
+                            QTextStream ts(&logFile);
+                            ts<<m_consoleMessage;
+
+                            logFile.close();
+                        }
 
                         emit deployDidFinish();
                     });
