@@ -13,7 +13,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-	<string>QtAppMacDeploy</string>
+        <string>QtAppMacDeploy</string>
 	<key>CFBundleName</key>
 	<string>Qt App Mac Deploy</string>
 	<key>CFBundleIdentifier</key>
@@ -27,6 +27,6 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2014, Andrew Shapovalov</string>
+        <string>© 2014 - 2018, Andrew Shapovalov</string>
 </dict>
 </plist>

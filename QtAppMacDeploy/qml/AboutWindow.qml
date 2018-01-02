@@ -59,7 +59,7 @@ Window {
                     id: copyrightLabel
                     width: parent.width
                     height: copyrightLabel.contentHeight
-                    text: "Copyright 2014 Andrew Shapovalov. All rights reserved."
+                    text: "Copyright 2014 - 2017 Andrew Shapovalov. All rights reserved."
                     verticalAlignment: Qt.AlignVCenter
                     wrapMode: Text.WordWrap
                     font {family: "Helvetica Neue"; pointSize: 14}

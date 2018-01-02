@@ -30,8 +30,7 @@ ApplicationWindow {
             MenuItem {
                 text: "About Qt App Mac Deploy"
                 onTriggered: {
-                    if(Helpers.createAboutWindow(appRoot, appRoot))
-                    {
+                    if(Helpers.createAboutWindow(appRoot, appRoot)) {
                         Helpers.aboutWindow.show();
                     }
                 }
@@ -48,8 +47,7 @@ ApplicationWindow {
 
         onAccepted: {
             var path = null;
-            switch(type)
-            {
+            switch(type) {
                 case 1: {
                     path = openPlist.fileUrl.toString();
                     entitlementsField.text = path.replace("file://", "");
@@ -68,8 +66,7 @@ ApplicationWindow {
 
         onAccepted: {
             var path = null;
-            switch(type)
-            {
+            switch(type) {
                 case 2: {
                     path = openDirectory.fileUrl.toString();
                     appPathField.text = path.replace("file://", "");
@@ -94,8 +91,7 @@ ApplicationWindow {
     }
 
 
-    function checkAllFields()
-    {
+    function checkAllFields() {
         var bool = (appPathField.text.length > 0 && qtPathField.text.length > 0);
         btnDeploy.enabled = (bool === true);
     }
@@ -126,100 +122,8 @@ ApplicationWindow {
             spacing: 10
 
             Component.onCompleted: {
-
-                if(qmdManager !== null && qmdManager.settings !== null)
-                {
+                if(qmdManager !== null && qmdManager.settings !== null) {
                     qtPathField.text = qmdManager.settings.qtFolder;
-                }
-            }
-
-            Row {
-                id: certificateRow
-                width: parent.width
-                height: certificateField.height
-
-                Label {
-                    id: certificateLabel
-                    width: 220
-                    height: parent.height
-                    verticalAlignment: Qt.AlignVCenter
-                    text: "Mac Developer Certificate (optional) "
-                }
-
-                TextField {
-                    id: certificateField
-                    width: parent.width - certificateLabel.width
-                    placeholderText: "3rd Party Mac Developer Application: <your ID>"
-
-                    onTextChanged: {
-                        checkAllFields();
-                        installCertificateField.enabled = (certificateField.text.length > 0);
-                        entitlementsField.enabled = (certificateField.text.length > 0);
-                        btnBrowseEntitlements.enabled = (certificateField.text.length > 0);
-                    }
-                }
-            }
-
-            Row {
-                id: installCertificateRow
-                width: parent.width
-                height: installCertificateField.height
-
-                Label {
-                    id: installCertificateLabel
-                    width: 220
-                    height: parent.height
-                    verticalAlignment: Qt.AlignVCenter
-                    text: "Mac Install Certificate (optional) "
-                }
-
-                TextField {
-                    id: installCertificateField
-                    enabled: false
-                    width: parent.width - installCertificateLabel.width
-                    placeholderText: "3rd Party Mac Developer Installer: <your ID>"
-
-                    onTextChanged: {
-                        checkAllFields();
-                    }
-                }
-            }
-
-            Row {
-                id: entitlementsRow
-                width: parent.width
-                height: entitlementsField.height
-
-                Label {
-                    id: entitlementsLabel
-                    width: 220
-                    height: parent.height
-                    verticalAlignment: Qt.AlignVCenter
-                    text: "Entitlements Path (optional) "
-                }
-
-                TextField {
-                    id: entitlementsField
-                    enabled: false
-                    width: parent.width - entitlementsLabel.width - btnBrowseEntitlements.width
-
-                    onTextChanged: {
-                        checkAllFields();
-                    }
-                }
-
-                Button {
-                    id: btnBrowseEntitlements
-                    height: parent.height
-                    enabled: false
-                    text: "..."
-
-                    onClicked: {
-                        openPlist.type = 1;
-                        openPlist.nameFilters = ["Entitlements.plist"];
-                        openPlist.setSelectFolder(false);
-                        openPlist.open();
-                    }
                 }
             }
 
@@ -233,7 +137,8 @@ ApplicationWindow {
                     width: 220
                     height: parent.height
                     verticalAlignment: Qt.AlignVCenter
-                    text: "Application Path "
+                    textFormat: Text.RichText
+                    text: "Application Path <b style='color:red;'>*</b> "
                 }
 
                 TextField {
@@ -254,6 +159,43 @@ ApplicationWindow {
                         openDirectory.type = 2;
                         openDirectory.nameFilters = ["*.app"]
                         openDirectory.setSelectFolder(false);
+                        openDirectory.open();
+                    }
+                }
+            }
+
+            Row {
+                id: qtPathRow
+                width: parent.width
+                height: qtPathField.height
+
+                Label {
+                    id: qtPathLabel
+                    width: 220
+                    height: parent.height
+                    verticalAlignment: Qt.AlignVCenter
+                    textFormat: Text.RichText
+                    text: "Qt Install Folder <b style='color:red;'>*</b> "
+                }
+
+                TextField {
+                    id: qtPathField
+                    width: parent.width - qtPathLabel.width - btnBrowseQt.width
+
+                    onTextChanged: {
+                        checkAllFields();
+                    }
+                }
+
+                Button {
+                    id: btnBrowseQt
+                    height: parent.height
+                    text: "..."
+
+                    onClicked: {
+                        openDirectory.type = 4;
+                        openDirectory.nameFilters = ["*"]
+                        openDirectory.setSelectFolder(true);
                         openDirectory.open();
                     }
                 }
@@ -291,38 +233,106 @@ ApplicationWindow {
                 }
             }
 
-            Row {
-                id: qtPathRow
+            GroupBox {
+                id: certificateSettingGroup
+                title: qsTr("Certificate Configuration (Optional)")
                 width: parent.width
-                height: qtPathField.height
+                height: certificateSettingColumn.height + 35
 
-                Label {
-                    id: qtPathLabel
-                    width: 220
-                    height: parent.height
-                    verticalAlignment: Qt.AlignVCenter
-                    text: "Qt Install Folder "
-                }
+                Column {
+                    id: certificateSettingColumn
+                    width: parent.width
+                    height: entitlementsRow.height + entitlementsRow.y
+                    spacing: 10
 
-                TextField {
-                    id: qtPathField
-                    width: parent.width - qtPathLabel.width - btnBrowseQt.width
+                    Row {
+                        id: certificateRow
+                        width: parent.width
+                        height: certificateField.height
 
-                    onTextChanged: {
-                        checkAllFields();
+                        Label {
+                            id: certificateLabel
+                            width: 220
+                            height: parent.height
+                            verticalAlignment: Qt.AlignVCenter
+                            text: "Mac Developer Certificate (optional) "
+                        }
+
+                        TextField {
+                            id: certificateField
+                            width: parent.width - certificateLabel.width
+                            placeholderText: "3rd Party Mac Developer Application: <your ID>"
+
+                            onTextChanged: {
+                                checkAllFields();
+                                installCertificateField.enabled = (certificateField.text.length > 0);
+                                entitlementsField.enabled = (certificateField.text.length > 0);
+                                btnBrowseEntitlements.enabled = (certificateField.text.length > 0);
+                            }
+                        }
                     }
-                }
 
-                Button {
-                    id: btnBrowseQt
-                    height: parent.height
-                    text: "..."
+                    Row {
+                        id: installCertificateRow
+                        width: parent.width
+                        height: installCertificateField.height
 
-                    onClicked: {
-                        openDirectory.type = 4;
-                        openDirectory.nameFilters = ["*"]
-                        openDirectory.setSelectFolder(true);
-                        openDirectory.open();
+                        Label {
+                            id: installCertificateLabel
+                            width: 220
+                            height: parent.height
+                            verticalAlignment: Qt.AlignVCenter
+                            text: "Mac Install Certificate (optional) "
+                        }
+
+                        TextField {
+                            id: installCertificateField
+                            enabled: false
+                            width: parent.width - installCertificateLabel.width
+                            placeholderText: "3rd Party Mac Developer Installer: <your ID>"
+
+                            onTextChanged: {
+                                checkAllFields();
+                            }
+                        }
+                    }
+
+                    Row {
+                        id: entitlementsRow
+                        width: parent.width
+                        height: entitlementsField.height
+
+                        Label {
+                            id: entitlementsLabel
+                            width: 220
+                            height: parent.height
+                            verticalAlignment: Qt.AlignVCenter
+                            text: "Entitlements Path (optional) "
+                        }
+
+                        TextField {
+                            id: entitlementsField
+                            enabled: false
+                            width: parent.width - entitlementsLabel.width - btnBrowseEntitlements.width
+
+                            onTextChanged: {
+                                checkAllFields();
+                            }
+                        }
+
+                        Button {
+                            id: btnBrowseEntitlements
+                            height: parent.height
+                            enabled: false
+                            text: "..."
+
+                            onClicked: {
+                                openPlist.type = 1;
+                                openPlist.nameFilters = ["Entitlements.plist"];
+                                openPlist.setSelectFolder(false);
+                                openPlist.open();
+                            }
+                        }
                     }
                 }
             }
@@ -330,7 +340,7 @@ ApplicationWindow {
             GroupBox {
                 id: consoleGroup
                 width: parent.width
-                height: parent.height - (qtPathRow.height + qtPathRow.y + 10);
+                height: parent.height - (certificateSettingGroup.height + certificateSettingGroup.y + 10);
                 title: "Console "
 
                 TextArea {
@@ -368,8 +378,7 @@ ApplicationWindow {
                 enabled: false
 
                 onClicked: {
-                    if(appPathField.text.length > 0 && qtPathField.text.length > 0)
-                    {
+                    if(appPathField.text.length > 0 && qtPathField.text.length > 0) {
                         spinnerView.running = true;
                         btnDeploy.enabled = false;
                         qmdManager.settings.certificate = certificateField.text;

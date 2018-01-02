@@ -11,9 +11,8 @@ SOURCES += main.cpp \
 
 RESOURCES += qml.qrc
 
-ICON = icon_512x512.icns
-
 macx {
+    ICON = icon_512x512.icns
     QMAKE_INFO_PLIST = Info.plist
 }
 
